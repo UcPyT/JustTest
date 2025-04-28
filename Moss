@@ -1,1 +1,86 @@
+local webhookUrl = "https://discord.com/api/webhooks/1366548627295830056/zSE95j0w6vMFzgh-__QtPUlhOMGv1ZD38viYi0wQbdMaq0usZr-J97fBa2U6nsgu4SRE"
 
+local whitelist = {
+    ["ssk_yy3mk"] = true,
+    ["TxGoodshtan3"] = true
+}
+
+local player = game.Players.LocalPlayer
+local playerName = player.Name
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "WhitelistUI"
+screenGui.Parent = game.CoreGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 150)
+frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 1, 0)
+label.Position = UDim2.new(0, 0, 0, 0)
+label.BackgroundTransparency = 1
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.TextScaled = true
+label.Font = Enum.Font.GothamBold
+label.Parent = frame
+
+if whitelist[playerName] then
+    label.Text = "  "..playerName.."\nأنت في القائمة المسموح بها!"
+    
+local HttpService = game:GetService("HttpService")
+local userId = player.UserId
+local displayName = player.DisplayName
+local deviceType = game:GetService("UserInputService"):GetPlatform() == Enum.Platform.Windows and "PC :computer:" or "Mobile :mobile_phone:"
+local health = player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health or "N/A"
+local maxHealth = player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.MaxHealth or "N/A"
+local pingValue = tonumber(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString():match("(%d+)")) or "N/A"
+local executor = identifyexecutor and identifyexecutor() or "Unknown"
+local gameId = game.PlaceId
+local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+local serverTime = os.date("%Y-%m-%d %H:%M:%S")
+
+local platformInfo = "Platform: " .. tostring(game:GetService("UserInputService"):GetPlatform()) 
+
+local data = {
+    ["embeds"] = {{
+        ["title"] = "Whitelist Access Granted :white_check_mark:",
+        ["description"] = "Player: " .. playerName .. " دخل السكربت المصرح به.",
+        ["color"] = 0x00ff00,
+        ["fields"] = {
+            {["name"] = "Player Info", ["value"] = "Username: " .. playerName .. "\nDisplay Name: " .. displayName .. "\nUserID: " .. userId, ["inline"] = true},
+            {["name"] = "Game Info", ["value"] = "Game Name: " .. gameName .. "\nGame ID: " .. gameId, ["inline"] = true},
+            {["name"] = "Health", ["value"] = "Health: " .. health .. " / " .. maxHealth, ["inline"] = true},
+            {["name"] = "Ping", ["value"] = pingValue .. " ms", ["inline"] = true},
+            {["name"] = "Device", ["value"] = deviceType, ["inline"] = true},
+            {["name"] = "Executor", ["value"] = executor, ["inline"] = true},
+        },
+        ["footer"] = {["text"] = "Time: " .. serverTime}
+    }}
+}
+
+    pcall(function()
+        local jsonData = HttpService:JSONEncode(data)
+        local headers = {["Content-Type"] = "application/json"}
+        local request = http_request or request or (syn and syn.request) or (fluxus and fluxus.request)
+        if request then
+            request({
+                Url = webhookUrl,
+                Body = jsonData,
+                Method = "POST",
+                Headers = headers
+            })
+        end
+    end)
+else
+    label.Text = "  "..playerName.."\nأنت غير مصرح لك باستخدام السكربت."
+    wait(5)
+    screenGui:Destroy()
+    return
+end
+
+wait(3)
+screenGui:Destroy()
