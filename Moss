@@ -1,7 +1,7 @@
 local webhookUrl = "https://discord.com/api/webhooks/1366548627295830056/zSE95j0w6vMFzgh-__QtPUlhOMGv1ZD38viYi0wQbdMaq0usZr-J97fBa2U6nsgu4SRE"
 
 local whitelist = {
-    ["ssk_yy3mk"] = true,
+    ["sskk_yy3mk"] = true,
     ["TxGoodshtan3"] = true
 }
 
